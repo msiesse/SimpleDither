@@ -22,7 +22,7 @@ You can take a look at some examples in Results Folder.
 <img src="ciel.jpg" width="300px" ><br/>
 
 - Dithering:<br/>
-<img src="Results/result.png" width="300px" ><br/>
+<img src="Results/ciel.png" width="300px" ><br/>
 
 ## Authors
 * **Martin Siesse** [Msiesse](https://github.com/msiesse)
