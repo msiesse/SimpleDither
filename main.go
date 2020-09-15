@@ -8,32 +8,42 @@ import (
 	"image/color"
 	"image/draw"
 	"image"
-//	"fmt"
 	"math"
 )
 
 func simpleDither(image *image.Gray16) {
 	var err, t	float64
+	var k		int
+	var width, height	int = image.Bounds().Size().X, image.Bounds().Size().Y
 
-	for i := 0; i < image.Bounds().Size().X; i++ {
-		for j := 0; j < image.Bounds().Size().Y; j++ {
-			err = float64(image.Gray16At(i, j).Y) / 65535
+	for i := 0; i < width; i++ {
+		for j := 0; j < height; j++ {
+			if i % 2 == 0 {
+				k = j
+			} else {
+				k = height - j - 1
+			}
+			err = float64(image.Gray16At(i, k).Y) / 65535
 			if err >= 0.5 {
 				t = 1
 			} else {
 				t = 0
 			}
-			image.SetGray16(i, j, color.Gray16{uint16(math.Round(err) * 65535.0)})
+			image.SetGray16(i, k, color.Gray16{uint16(math.Round(err) * 65535.0)})
 			err = err - t
-			if i + 1 < image.Bounds().Size().X {
-				image.SetGray16(i + 1, j, color.Gray16{image.Gray16At(i + 1, j).Y + uint16((7 / 16) * err)})
-				if j + 1 < image.Bounds().Size().Y {
-					image.SetGray16(i + 1, j + 1, color.Gray16{image.Gray16At(i + 1, j + 1).Y + uint16((3 / 16) * err)})
+			if i + 1 < width {
+				image.SetGray16(i + 1, k, 
+					color.Gray16{image.Gray16At(i + 1, k).Y + uint16((7 / 16) * err)})
+				if k + 1 < height {
+					image.SetGray16(i + 1, k + 1, 
+						color.Gray16{image.Gray16At(i + 1, k + 1).Y + uint16((3 / 16) * err)})
 				}
-			} else if j + 1 < image.Bounds().Size().Y {
-				image.SetGray16(i, j + 1, color.Gray16{image.Gray16At(i, j + 1).Y + uint16((5 / 16) * err)})
+			} else if k + 1 < height {
+				image.SetGray16(i, k + 1, 
+					color.Gray16{image.Gray16At(i, k + 1).Y + uint16((5 / 16) * err)})
 				if i - 1 >= 0 {
-					image.SetGray16(i - 1, j + 1, color.Gray16{image.Gray16At(i - 1, j + 1).Y + uint16((1 / 16) * err)})
+					image.SetGray16(i - 1, k + 1, 
+						color.Gray16{image.Gray16At(i - 1, k + 1).Y + uint16((1 / 16) * err)})
 				}
 			}
 		}
@@ -41,6 +51,7 @@ func simpleDither(image *image.Gray16) {
 }
 
 func main() {
+
 	if (len(os.Args) == 1) {
 		os.Exit(1)
 	}
@@ -52,13 +63,16 @@ func main() {
 	}
 
 	defer file.Close()
+
 	imageData, err := jpeg.Decode(file)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	myImg := image.NewGray16(imageData.Bounds())
 	draw.Draw(myImg, imageData.Bounds(), imageData, image.Point{}, draw.Over)
 	simpleDither(myImg)
+
 	result, err := os.Create("result.png")
 	if err != nil {
 		log.Fatal(err)
