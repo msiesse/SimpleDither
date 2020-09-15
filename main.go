@@ -9,6 +9,7 @@ import (
 	"image/draw"
 	"image"
 	"math"
+	//"fmt"
 )
 
 func simpleDither(image *image.Gray16) {
@@ -18,7 +19,7 @@ func simpleDither(image *image.Gray16) {
 	for i := 0; i < width; i++ {
 		if i % 2 == 0 {
 			for j := 0; j < height; j++ {
-				err = float64(image.Gray16At(i, j).Y) / 65535
+				err = float64(image.Gray16At(i, j).Y) / 65535.0
 				if err >= 0.5 {
 					t = 1
 				} else {
@@ -28,23 +29,23 @@ func simpleDither(image *image.Gray16) {
 				err = err - t
 				if j + 1 < height {
 					image.SetGray16(i, j + 1, 
-						color.Gray16{image.Gray16At(i, j + 1).Y + uint16((7 / 16) * err)})
+						color.Gray16{image.Gray16At(i, j + 1).Y + uint16(math.Round((7. / 16.) * err * 65535.0))})
 					if i + 1 < width {
 						image.SetGray16(i + 1, j + 1, 
-							color.Gray16{image.Gray16At(i + 1, j + 1).Y + uint16((3 / 16) * err)})
+							color.Gray16{image.Gray16At(i + 1, j + 1).Y + uint16(math.Round((3. / 16.) * err * 65535.0))})
 					}
 				} else if i + 1 < width {
 					image.SetGray16(i + 1, j, 
-						color.Gray16{image.Gray16At(i + 1, j).Y + uint16((5 / 16) * err)})
+						color.Gray16{image.Gray16At(i + 1, j).Y + uint16(math.Round((5. / 16.) * err * 65535.0))})
 					if j - 1 >= 0 {
 						image.SetGray16(i + 1, j - 1, 
-							color.Gray16{image.Gray16At(i + 1, j - 1).Y + uint16((1 / 16) * err)})
+							color.Gray16{image.Gray16At(i + 1, j - 1).Y + uint16(math.Round((1. / 16.) * err * 65535.0))})
 					}
 				}
 			}
 		} else {
 			for j := height - 1; j >= 0; j-- {
-				err = float64(image.Gray16At(i, j).Y) / 65535
+				err = float64(image.Gray16At(i, j).Y) / 65535.0
 				if err >= 0.5 {
 					t = 1
 				} else {
@@ -54,17 +55,17 @@ func simpleDither(image *image.Gray16) {
 				err = err - t
 				if j - 1 >= 0 {
 					image.SetGray16(i, j - 1, 
-						color.Gray16{image.Gray16At(i, j - 1).Y + uint16((7 / 16) * err)})
+						color.Gray16{image.Gray16At(i, j - 1).Y + uint16(math.Round((7. / 16.) * err * 65535.0))})
 					if i + 1 < width {
 						image.SetGray16(i + 1, j - 1, 
-							color.Gray16{image.Gray16At(i + 1, j - 1).Y + uint16((3 / 16) * err)})
+							color.Gray16{image.Gray16At(i + 1, j - 1).Y + uint16(math.Round((3. / 16.) * err * 65535.0))})
 					}
 				} else if i + 1 < width {
 					image.SetGray16(i + 1, j, 
-						color.Gray16{image.Gray16At(i + 1, j).Y + uint16((5 / 16) * err)})
+						color.Gray16{image.Gray16At(i + 1, j).Y + uint16(math.Round((5. / 16.) * err * 65535.0))})
 					if j + 1 < height {
 						image.SetGray16(i + 1, j + 1, 
-							color.Gray16{image.Gray16At(i + 1, j + 1).Y + uint16((1 / 16) * err)})
+							color.Gray16{image.Gray16At(i + 1, j + 1).Y + uint16(math.Round((1. / 16.) * err * 65535.0))})
 					}
 				}
 			}
