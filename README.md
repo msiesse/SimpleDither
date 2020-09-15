@@ -1,6 +1,6 @@
 # SimpleDither
 
-This is a project about a simple dither algorithm. We're implementing The Floyd-Steinberg Dithering in Golang.
+This is a project about a simple dither algorithm. We're implementing<a href="https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering"> The Floyd-Steinberg Dithering </a> in Golang.
 
 ## Instructions
 
