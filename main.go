@@ -13,37 +13,59 @@ import (
 
 func simpleDither(image *image.Gray16) {
 	var err, t	float64
-	var k		int
 	var width, height	int = image.Bounds().Size().X, image.Bounds().Size().Y
 
 	for i := 0; i < width; i++ {
-		for j := 0; j < height; j++ {
-			if i % 2 == 0 {
-				k = j
-			} else {
-				k = height - j - 1
-			}
-			err = float64(image.Gray16At(i, k).Y) / 65535
-			if err >= 0.5 {
-				t = 1
-			} else {
-				t = 0
-			}
-			image.SetGray16(i, k, color.Gray16{uint16(math.Round(err) * 65535.0)})
-			err = err - t
-			if i + 1 < width {
-				image.SetGray16(i + 1, k, 
-					color.Gray16{image.Gray16At(i + 1, k).Y + uint16((7 / 16) * err)})
-				if k + 1 < height {
-					image.SetGray16(i + 1, k + 1, 
-						color.Gray16{image.Gray16At(i + 1, k + 1).Y + uint16((3 / 16) * err)})
+		if i % 2 == 0 {
+			for j := 0; j < height; j++ {
+				err = float64(image.Gray16At(i, j).Y) / 65535
+				if err >= 0.5 {
+					t = 1
+				} else {
+					t = 0
 				}
-			} else if k + 1 < height {
-				image.SetGray16(i, k + 1, 
-					color.Gray16{image.Gray16At(i, k + 1).Y + uint16((5 / 16) * err)})
+				image.SetGray16(i, j, color.Gray16{uint16(math.Round(err) * 65535.0)})
+				err = err - t
+				if i + 1 < width {
+					image.SetGray16(i + 1, j, 
+						color.Gray16{image.Gray16At(i + 1, j).Y + uint16((7 / 16) * err)})
+					if j + 1 < height {
+						image.SetGray16(i + 1, j + 1, 
+							color.Gray16{image.Gray16At(i + 1, j + 1).Y + uint16((3 / 16) * err)})
+					}
+				} else if j + 1 < height {
+					image.SetGray16(i, j + 1, 
+						color.Gray16{image.Gray16At(i, j + 1).Y + uint16((5 / 16) * err)})
+					if i - 1 >= 0 {
+						image.SetGray16(i - 1, j + 1, 
+							color.Gray16{image.Gray16At(i - 1, j + 1).Y + uint16((1 / 16) * err)})
+					}
+				}
+			}
+		} else {
+			for j := height - 1; j >= 0; j-- {
+				err = float64(image.Gray16At(i, j).Y) / 65535
+				if err >= 0.5 {
+					t = 1
+				} else {
+					t = 0
+				}
+				image.SetGray16(i, j, color.Gray16{uint16(math.Round(err) * 65535.0)})
+				err = err - t
 				if i - 1 >= 0 {
-					image.SetGray16(i - 1, k + 1, 
-						color.Gray16{image.Gray16At(i - 1, k + 1).Y + uint16((1 / 16) * err)})
+					image.SetGray16(i - 1, j, 
+						color.Gray16{image.Gray16At(i - 1, j).Y + uint16((7 / 16) * err)})
+					if j - 1 >= 0 {
+						image.SetGray16(i - 1, j - 1, 
+							color.Gray16{image.Gray16At(i - 1, j - 1).Y + uint16((3 / 16) * err)})
+					}
+				} else if j - 1 >= 0 {
+					image.SetGray16(i, j - 1, 
+						color.Gray16{image.Gray16At(i, j - 1).Y + uint16((5 / 16) * err)})
+					if i + 1 < width {
+						image.SetGray16(i + 1, j - 1, 
+							color.Gray16{image.Gray16At(i + 1, j - 1).Y + uint16((1 / 16) * err)})
+					}
 				}
 			}
 		}
